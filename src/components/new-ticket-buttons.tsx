@@ -1,11 +1,21 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { GitBranchPlus, TicketPlus } from "lucide-react";
+import { GitBranchPlus, TicketPlus, Users } from "lucide-react";
 
 export function NewTicketButtons() {
   return (
     <>
+      <Link
+        href="/teams/"
+        className={cn(
+          buttonVariants({ variant: "ghost" }),
+          "text-[#1a4a5c]/80"
+        )}
+      >
+        <Users data-icon="inline-start" />
+        Teams
+      </Link>
       <Link
         href="/new/help-desk"
         className={cn(

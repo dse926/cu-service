@@ -4,12 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev --port 3456",
+    "dev:api": "npm run dev --prefix server",
     "build": "next build",
     "build:pages": "NEXT_PUBLIC_BASE_PATH=/cu-service next build && touch out/.nojekyll && NEXT_PUBLIC_BASE_PATH=/cu-service node scripts/verify-pages-build.mjs",
+    "build:azure": "NEXT_PUBLIC_BASE_PATH= next build && npm run build --prefix server",
     "start": "next start --port 3456",
+    "start:api": "npm run start --prefix server",
     "lint": "eslint",
     "export": "next build",
-    "verify:pages": "node scripts/verify-pages-build.mjs"
+    "verify:pages": "node scripts/verify-pages-build.mjs",
+    "deploy:azure": "bash infra/deploy.sh"
   },
   "homepage": "https://dse926.github.io/cu-service/",
   "dependencies": {

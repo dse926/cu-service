@@ -10,6 +10,7 @@ import {
   TypeBadge,
 } from "@/components/status-badge";
 import { TicketActions } from "@/components/ticket-actions";
+import { TicketIntegrations } from "@/components/ticket-integrations";
 import { useTicketStore } from "@/components/ticket-store";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -332,6 +333,8 @@ function TicketDetailContent() {
                 <TicketActions ticket={ticket} />
               </div>
             </section>
+
+            <TicketIntegrations ticket={ticket} />
           </aside>
         </div>
       </article>

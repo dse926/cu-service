@@ -1,0 +1,50 @@
+{
+  "updatedAt": "2026-10-20T00:00:00.000Z",
+  "teams": [
+    {
+      "id": "infrastructure",
+      "name": "Infrastructure",
+      "adoAreaPath": "MeridianCU\\Infrastructure",
+      "adoIterationPath": "MeridianCU\\Infrastructure",
+      "description": "Data center, servers, firewalls, VPN, Symitar hosts, OS patching, storage, backup, DR, network circuits, edge appliances, payment gateway hosts, OpenSSL and platform patches.",
+      "notifyEmails": ["infra-ops@meridiancu.org", "marcus.webb@meridiancu.org"],
+      "pagerDutySeverity": "critical"
+    },
+    {
+      "id": "service-desk",
+      "name": "Service Desk",
+      "adoAreaPath": "MeridianCU\\Service Desk",
+      "adoIterationPath": "MeridianCU\\Service Desk",
+      "description": "Password resets, account unlocks, MFA enrollment, laptop and printer hardware break/fix, Outlook mailboxes, Teams, telephony handsets, branch teller peripherals, end-user access requests.",
+      "notifyEmails": ["servicedesk@meridiancu.org", "priya.nair@meridiancu.org"],
+      "pagerDutySeverity": "warning"
+    },
+    {
+      "id": "change-management",
+      "name": "Change Management",
+      "adoAreaPath": "MeridianCU\\Change Management",
+      "adoIterationPath": "MeridianCU\\Change Management",
+      "description": "CAB review, change requests, maintenance windows, rollback plans, release coordination, emergency changes, production deployment scheduling, risk and impact assessments.",
+      "notifyEmails": ["change@meridiancu.org", "elena.soto@meridiancu.org"],
+      "pagerDutySeverity": "error"
+    },
+    {
+      "id": "infosec",
+      "name": "Information Security",
+      "adoAreaPath": "MeridianCU\\Information Security",
+      "adoIterationPath": "MeridianCU\\Information Security",
+      "description": "Security advisories, vulnerability remediation, Conditional Access, MFA policy, phishing, SIEM alerts, identity threat, encryption, PCI and NCUA control findings.",
+      "notifyEmails": ["infosec@meridiancu.org", "derek.cho@meridiancu.org"],
+      "pagerDutySeverity": "critical"
+    },
+    {
+      "id": "core-banking",
+      "name": "Core Banking",
+      "adoAreaPath": "MeridianCU\\Core Banking",
+      "adoIterationPath": "MeridianCU\\Core Banking",
+      "description": "Symitar releases, ACH files, loan origination, teller and lending streams, core batch jobs, settlement windows, online banking integrations with core.",
+      "notifyEmails": ["corebanking@meridiancu.org", "nina.patel@meridiancu.org"],
+      "pagerDutySeverity": "critical"
+    }
+  ]
+}

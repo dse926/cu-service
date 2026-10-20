@@ -17,6 +17,7 @@ const required = [
   "tickets/view/index.html",
   "new/help-desk/index.html",
   "new/change/index.html",
+  "teams/index.html",
 ];
 
 let failed = false;
