@@ -1,8 +1,7 @@
-@description('Creates a NEW Meridian Service Desk stack. Does not modify any existing resource groups or App Services.')
 targetScope = 'subscription'
 
 @minLength(3)
-@maxLength(20)
+@maxLength(24)
 @description('Short unique suffix so names never collide with existing Azure apps.')
 param nameSuffix string = uniqueString(subscription().subscriptionId, 'mcu-servicedesk')
 
