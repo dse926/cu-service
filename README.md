@@ -2,7 +2,7 @@
 
 Help desk and change management ticketing for Meridian Credit Union ($5.2B assets). Staff can open day-to-day IT requests and submit production changes for CAB review, approval, scheduling, and completion.
 
-This build is a **static demo** suitable for GitHub Pages. Ticket state lives in the browser (`localStorage`) and can be reset from the queue.
+This build is a **static demo** for GitHub Pages. Ticket state lives in the browser (`localStorage`) and can be reset from the queue.
 
 ## Features
 
@@ -20,24 +20,39 @@ npm run dev
 
 Open [http://localhost:3456](http://localhost:3456).
 
-## Static build
+## Static / Pages build
 
 ```bash
-npm run build
+npm run build:pages
 npx serve out
 ```
 
-Optional project-pages base path:
+`build:pages` builds with `NEXT_PUBLIC_BASE_PATH=/cu-service` (project site) and smoke-checks the export. For a user site (`username.github.io`), build with an empty base path:
 
 ```bash
-NEXT_PUBLIC_BASE_PATH=/your-repo-name npm run build
+NEXT_PUBLIC_BASE_PATH= npm run build
 ```
 
 ## Deploy to GitHub Pages
 
-1. Push this repo to GitHub (public or with Pages enabled).
-2. In the repo: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-3. Push to `main` (or run the **Deploy to GitHub Pages** workflow manually).
-4. Share the site URL from the Actions deploy summary (usually `https://<user>.github.io/<repo>/`).
+The workflow [`.github/workflows/deploy-github-pages.yml`](.github/workflows/deploy-github-pages.yml) builds the static export and publishes it with the official Pages actions.
 
-The workflow sets `NEXT_PUBLIC_BASE_PATH` automatically for project sites.
+### One-time GitHub setup
+
+1. Create a **public** GitHub repository (Free-plan Pages requires a public repo), e.g. `david-elliott-dev/cu-service`.
+2. Push this project to that repo’s `main` branch.
+3. Open **Settings → Pages → Build and deployment**.
+4. Set **Source** to **GitHub Actions** (not “Deploy from a branch”).
+5. Push to `main` or run **Actions → Deploy to GitHub Pages → Run workflow**.
+
+Demo URL will be:
+
+`https://<owner>.github.io/<repo>/`
+
+Example: `https://david-elliott-dev.github.io/cu-service/`
+
+### Notes
+
+- The workflow sets `NEXT_PUBLIC_BASE_PATH` from the Pages base path automatically.
+- `.nojekyll` is written into `out/` so GitHub does not skip `_next/` assets.
+- Origin (`cursor.com/codebase/...`) does not host Pages; you need a GitHub remote for this workflow to run.

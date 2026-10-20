@@ -21,6 +21,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -33,13 +37,21 @@ jobs:
       - name: Resolve base path
         id: base
         run: |
+          # User/org site (owner.github.io) → no base path.
+          # Project site → /<repo> so assets resolve under GitHub Pages.
           REPO="${{ github.event.repository.name }}"
           OWNER="${{ github.repository_owner }}"
-          if [ "$REPO" = "${OWNER}.github.io" ]; then
+          BASE_PATH="${{ steps.pages.outputs.base_path }}"
+          if [ -n "$BASE_PATH" ] && [ "$BASE_PATH" != "/" ]; then
+            # configure-pages returns trailing slash; Next wants no trailing slash
+            BASE_PATH="${BASE_PATH%/}"
+            echo "path=${BASE_PATH}" >> "$GITHUB_OUTPUT"
+          elif [ "$REPO" = "${OWNER}.github.io" ]; then
             echo "path=" >> "$GITHUB_OUTPUT"
           else
             echo "path=/${REPO}" >> "$GITHUB_OUTPUT"
           fi
+          echo "Resolved NEXT_PUBLIC_BASE_PATH=$(grep path= "$GITHUB_OUTPUT" | cut -d= -f2-)"
 
       - name: Build static site
         run: npm run build
