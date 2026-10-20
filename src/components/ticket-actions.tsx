@@ -1,13 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import {
-  addCommentAction,
-  assignTicketAction,
-  cabDecisionAction,
-  updateStatusAction,
-} from "@/app/actions";
+import { useState } from "react";
+import { useTicketStore } from "@/components/ticket-store";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,8 +25,7 @@ const changeNext: Partial<Record<TicketStatus, TicketStatus[]>> = {
 };
 
 export function TicketActions({ ticket }: { ticket: Ticket }) {
-  const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const store = useTicketStore();
   const [note, setNote] = useState("");
   const [comment, setComment] = useState("");
   const [message, setMessage] = useState<string | null>(null);
@@ -47,19 +40,16 @@ export function TicketActions({ ticket }: { ticket: Ticket }) {
       ? ticket.cabDecisions?.filter((d) => d.decision === "pending") ?? []
       : [];
 
-  function run(action: () => Promise<void>, ok: string) {
+  function run(action: () => void, ok: string) {
     setMessage(null);
-    startTransition(async () => {
-      try {
-        await action();
-        setMessage(ok);
-        setNote("");
-        setComment("");
-        router.refresh();
-      } catch {
-        setMessage("Action failed. Try again.");
-      }
-    });
+    try {
+      action();
+      setMessage(ok);
+      setNote("");
+      setComment("");
+    } catch {
+      setMessage("Action failed. Try again.");
+    }
   }
 
   return (
@@ -74,10 +64,10 @@ export function TicketActions({ ticket }: { ticket: Ticket }) {
                 type="button"
                 size="sm"
                 variant="outline"
-                disabled={pending || ticket.assignee?.email === agent.email}
+                disabled={ticket.assignee?.email === agent.email}
                 onClick={() =>
                   run(
-                    () => assignTicketAction(ticket.id, agent.email),
+                    () => store.assign(ticket.id, agent.email),
                     `Assigned to ${agent.name}`
                   )
                 }
@@ -109,7 +99,6 @@ export function TicketActions({ ticket }: { ticket: Ticket }) {
                 key={status}
                 type="button"
                 size="sm"
-                disabled={pending}
                 variant={
                   status === "rejected" || status === "rolled_back"
                     ? "destructive"
@@ -122,7 +111,7 @@ export function TicketActions({ ticket }: { ticket: Ticket }) {
                 }
                 onClick={() =>
                   run(
-                    () => updateStatusAction(ticket.id, status, note || undefined),
+                    () => store.setStatus(ticket.id, status, note || undefined),
                     `Status → ${status}`
                   )
                 }
@@ -153,12 +142,11 @@ export function TicketActions({ ticket }: { ticket: Ticket }) {
                   <Button
                     type="button"
                     size="sm"
-                    disabled={pending}
                     className="bg-[#2f5d4a] hover:bg-[#244839]"
                     onClick={() =>
                       run(
                         () =>
-                          cabDecisionAction(
+                          store.cabDecide(
                             ticket.id,
                             vote.reviewer,
                             "approved",
@@ -174,11 +162,10 @@ export function TicketActions({ ticket }: { ticket: Ticket }) {
                     type="button"
                     size="sm"
                     variant="destructive"
-                    disabled={pending}
                     onClick={() =>
                       run(
                         () =>
-                          cabDecisionAction(
+                          store.cabDecide(
                             ticket.id,
                             vote.reviewer,
                             "rejected",
@@ -210,11 +197,11 @@ export function TicketActions({ ticket }: { ticket: Ticket }) {
           type="button"
           size="sm"
           variant="outline"
-          disabled={pending || !comment.trim()}
+          disabled={!comment.trim()}
           onClick={() =>
             run(
               () =>
-                addCommentAction(
+                store.addComment(
                   ticket.id,
                   ticket.assignee?.name || "Service Desk",
                   comment

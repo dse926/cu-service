@@ -6,7 +6,8 @@
     "dev": "next dev --port 3456",
     "build": "next build",
     "start": "next start --port 3456",
-    "lint": "eslint"
+    "lint": "eslint",
+    "export": "next build"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

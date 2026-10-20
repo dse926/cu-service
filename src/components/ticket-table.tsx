@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PriorityBadge, StatusBadge, TypeBadge } from "@/components/status-badge";
 import { categoryLabels, changeTypeLabels } from "@/lib/labels";
+import { ticketPath } from "@/lib/tickets-logic";
 import type { Ticket } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +50,7 @@ export function TicketTable({ tickets }: { tickets: Ticket[] }) {
             style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
           >
             <Link
-              href={`/tickets/${ticket.id}`}
+              href={ticketPath(ticket.id)}
               className="grid gap-2 px-4 py-3.5 md:grid-cols-[7rem_1fr_7rem_7rem_8rem_7rem] md:items-center md:gap-3"
             >
               <span className="font-mono text-sm font-medium text-[#1a4a5c]">

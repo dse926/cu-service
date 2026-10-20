@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import { createChangeAction } from "@/app/actions";
+import { useState } from "react";
+import { useTicketStore } from "@/components/ticket-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,7 @@ import {
   priorityLabels,
   riskLabels,
 } from "@/lib/labels";
+import { ticketPath } from "@/lib/tickets-logic";
 
 const changeTypes = Object.keys(changeTypeLabels) as ChangeType[];
 const priorities = Object.keys(priorityLabels) as Priority[];
@@ -33,38 +34,38 @@ function defaultWindow(startHour: number, endHour: number) {
 
 export function ChangeForm() {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const { createChange } = useTicketStore();
+  const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const windowDefaults = defaultWindow(22, 1);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    setPending(true);
     const fd = new FormData(e.currentTarget);
-    startTransition(async () => {
-      try {
-        const result = await createChangeAction({
-          title: String(fd.get("title") || ""),
-          description: String(fd.get("description") || ""),
-          priority: String(fd.get("priority") || "medium") as Priority,
-          changeType: String(fd.get("changeType") || "normal") as ChangeType,
-          riskLevel: String(fd.get("riskLevel") || "medium") as RiskLevel,
-          impactSummary: String(fd.get("impactSummary") || ""),
-          affectedSystems: String(fd.get("affectedSystems") || ""),
-          plannedStart: String(fd.get("plannedStart") || ""),
-          plannedEnd: String(fd.get("plannedEnd") || ""),
-          implementationPlan: String(fd.get("implementationPlan") || ""),
-          rollbackPlan: String(fd.get("rollbackPlan") || ""),
-          requesterName: String(fd.get("requesterName") || ""),
-          requesterEmail: String(fd.get("requesterEmail") || ""),
-          requesterDepartment: String(fd.get("requesterDepartment") || ""),
-        });
-        router.push(`/tickets/${result.id}`);
-        router.refresh();
-      } catch {
-        setError("Could not submit the change. Check required fields and try again.");
-      }
-    });
+    try {
+      const ticket = createChange({
+        title: String(fd.get("title") || ""),
+        description: String(fd.get("description") || ""),
+        priority: String(fd.get("priority") || "medium") as Priority,
+        changeType: String(fd.get("changeType") || "normal") as ChangeType,
+        riskLevel: String(fd.get("riskLevel") || "medium") as RiskLevel,
+        impactSummary: String(fd.get("impactSummary") || ""),
+        affectedSystems: String(fd.get("affectedSystems") || ""),
+        plannedStart: String(fd.get("plannedStart") || ""),
+        plannedEnd: String(fd.get("plannedEnd") || ""),
+        implementationPlan: String(fd.get("implementationPlan") || ""),
+        rollbackPlan: String(fd.get("rollbackPlan") || ""),
+        requesterName: String(fd.get("requesterName") || ""),
+        requesterEmail: String(fd.get("requesterEmail") || ""),
+        requesterDepartment: String(fd.get("requesterDepartment") || ""),
+      });
+      router.push(ticketPath(ticket.id));
+    } catch {
+      setError("Could not submit the change. Check required fields and try again.");
+      setPending(false);
+    }
   }
 
   return (

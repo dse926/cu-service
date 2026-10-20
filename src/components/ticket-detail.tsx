@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import {
   PriorityBadge,
@@ -7,13 +10,13 @@ import {
   TypeBadge,
 } from "@/components/status-badge";
 import { TicketActions } from "@/components/ticket-actions";
+import { useTicketStore } from "@/components/ticket-store";
 import { buttonVariants } from "@/components/ui/button";
 import {
   categoryLabels,
   changeTypeLabels,
   riskLabels,
 } from "@/lib/labels";
-import { getTicket } from "@/lib/tickets-store";
 import { cn } from "@/lib/utils";
 import { ArrowLeft } from "lucide-react";
 
@@ -27,14 +30,47 @@ function formatWhen(iso: string) {
   });
 }
 
-export default async function TicketPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const ticket = getTicket(id);
-  if (!ticket) notFound();
+function TicketDetailContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id") ?? "";
+  const { getById, ready } = useTicketStore();
+  const ticket = id ? getById(id) : undefined;
+
+  if (!ready) {
+    return (
+      <div className="mx-auto max-w-6xl px-4 py-8 text-sm text-muted-foreground">
+        Loading ticket…
+      </div>
+    );
+  }
+
+  if (!ticket) {
+    return (
+      <AppShell
+        actions={
+          <Link
+            href="/"
+            className={cn(
+              buttonVariants({ variant: "outline" }),
+              "border-[#1a4a5c]/20 bg-white/80"
+            )}
+          >
+            <ArrowLeft data-icon="inline-start" />
+            Queue
+          </Link>
+        }
+      >
+        <div className="rounded-xl border border-dashed border-[#1a4a5c]/20 bg-white/60 px-6 py-16 text-center">
+          <p className="font-[family-name:var(--font-display)] text-xl text-[#143a48]">
+            Ticket not found
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            It may have been cleared by Reset demo, or the link is incomplete.
+          </p>
+        </div>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell
@@ -240,11 +276,15 @@ export default async function TicketPage({
                       (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)
                     )
                     .map((c) => (
-                      <li key={c.id} className="relative pl-4 border-l-2 border-[#1a4a5c]/15">
+                      <li
+                        key={c.id}
+                        className="relative border-l-2 border-[#1a4a5c]/15 pl-4"
+                      >
                         <p className="text-xs text-muted-foreground">
-                          {c.author} · {formatWhen(c.createdAt)} · {c.kind.replace("_", " ")}
+                          {c.author} · {formatWhen(c.createdAt)} ·{" "}
+                          {c.kind.replace("_", " ")}
                         </p>
-                        <p className="mt-1 text-sm whitespace-pre-wrap">
+                        <p className="mt-1 whitespace-pre-wrap text-sm">
                           {c.body}
                         </p>
                       </li>
@@ -296,5 +336,19 @@ export default async function TicketPage({
         </div>
       </article>
     </AppShell>
+  );
+}
+
+export function TicketDetailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-6xl px-4 py-8 text-sm text-muted-foreground">
+          Loading ticket…
+        </div>
+      }
+    >
+      <TicketDetailContent />
+    </Suspense>
   );
 }

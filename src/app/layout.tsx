@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Source_Sans_3 } from "next/font/google";
+import { TicketStoreProvider } from "@/components/ticket-store";
 import "./globals.css";
 
 const display = Fraunces({
@@ -26,7 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${display.variable} ${sans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans text-[#143a48]">
-        {children}
+        <TicketStoreProvider>{children}</TicketStoreProvider>
       </body>
     </html>
   );

@@ -1,45 +1,46 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import { createHelpDeskAction } from "@/app/actions";
+import { useState } from "react";
+import { useTicketStore } from "@/components/ticket-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { HelpDeskCategory, Priority } from "@/lib/types";
 import { categoryLabels, priorityLabels } from "@/lib/labels";
+import { ticketPath } from "@/lib/tickets-logic";
 
 const categories = Object.keys(categoryLabels) as HelpDeskCategory[];
 const priorities = Object.keys(priorityLabels) as Priority[];
 
 export function HelpDeskForm() {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const { createHelpDesk } = useTicketStore();
+  const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    setPending(true);
     const fd = new FormData(e.currentTarget);
-    startTransition(async () => {
-      try {
-        const result = await createHelpDeskAction({
-          title: String(fd.get("title") || ""),
-          description: String(fd.get("description") || ""),
-          priority: String(fd.get("priority") || "medium") as Priority,
-          category: String(fd.get("category") || "other") as HelpDeskCategory,
-          requesterName: String(fd.get("requesterName") || ""),
-          requesterEmail: String(fd.get("requesterEmail") || ""),
-          requesterDepartment: String(fd.get("requesterDepartment") || ""),
-          requesterBranch: String(fd.get("requesterBranch") || ""),
-        });
-        router.push(`/tickets/${result.id}`);
-        router.refresh();
-      } catch {
-        setError("Could not open the request. Check required fields and try again.");
-      }
-    });
+    try {
+      const ticket = createHelpDesk({
+        title: String(fd.get("title") || ""),
+        description: String(fd.get("description") || ""),
+        priority: String(fd.get("priority") || "medium") as Priority,
+        category: String(fd.get("category") || "other") as HelpDeskCategory,
+        requesterName: String(fd.get("requesterName") || ""),
+        requesterEmail: String(fd.get("requesterEmail") || ""),
+        requesterDepartment: String(fd.get("requesterDepartment") || ""),
+        requesterBranch: String(fd.get("requesterBranch") || ""),
+      });
+      router.push(ticketPath(ticket.id));
+    } catch {
+      setError("Could not open the request. Check required fields and try again.");
+      setPending(false);
+    }
   }
 
   return (
