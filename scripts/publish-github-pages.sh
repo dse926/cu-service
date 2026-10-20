@@ -3,7 +3,7 @@
 # Creates/uses a public GitHub repo, pushes main, enables Pages via Actions.
 set -euo pipefail
 
-OWNER="${GITHUB_OWNER:-david-elliott-dev}"
+OWNER="${GITHUB_OWNER:-dse926}"
 REPO="${GITHUB_REPO:-cu-service}"
 FULL="$OWNER/$REPO"
 
